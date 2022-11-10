@@ -24,7 +24,7 @@ public class MentalHealth : MonoBehaviour {
 
     float dps;
     float waitTime;
-    bool triggerShaking = false;
+    bool triggerShaking;
 
     void Start() {
         dps = health / timeLimitation;
@@ -42,28 +42,41 @@ public class MentalHealth : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        float heathPercentage = health / maxHealth;
-        if (heathPercentage < 0.8) {
-            triggerShaking = true;
-        }
+        ChangeVisualization();
+    }
 
+    void ChangeVisualization() {
+        float heathPercentage = health / maxHealth;
+        triggerShaking = heathPercentage < 0.8;
+        
         if (heathPercentage < 0.6) {
-            crackImage.enabled = true;
+            if (!crackImage.enabled) {
+                crackImage.enabled = true;
+            }
+        } else {
+            crackImage.enabled = false;
+        }
+        
+        if (heathPercentage < 0.2) {
+            if (!holeImage.enabled) {
+                holeImage.enabled = true;
+            }
+        } else {
+            holeImage.enabled = false;
         }
 
         if (heathPercentage < 0.4) {
             wall.color = tensionWallColor;
-            ground.color = tensionGroundColor;            
-        }
-
-        if (heathPercentage < 0.2) {
-            holeImage.enabled = true;
+            ground.color = tensionGroundColor;
+        } else {
+            wall.color = normalWallColor;
+            ground.color = normalGroundColor;           
         }
     }
 
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Heart")) {
-            health = Mathf.Clamp(health + 50, 0, maxHealth);
+            AddHealth(50);
             Destroy(other.gameObject);
         }
     }
@@ -76,6 +89,11 @@ public class MentalHealth : MonoBehaviour {
 
     bool IsAlive() {
         return health > 0;
+    }
+
+    void AddHealth(float amount) {
+        health = Mathf.Clamp(health + amount, 0, maxHealth);
+        healthBar.SetHealth(health);
     }
 
     void DecreaseHealth(float amount) {
