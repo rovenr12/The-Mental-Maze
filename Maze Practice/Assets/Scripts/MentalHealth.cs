@@ -13,8 +13,15 @@ public class MentalHealth : MonoBehaviour {
     [SerializeField] float jumpScareTimeInterval = 10f;
     [SerializeField] CameraShake cameraShake;
     [SerializeField] Image crackImage;
-    
-    
+    [SerializeField] Image holeImage;
+    [SerializeField] Material wall;
+    [SerializeField] Material ground;
+
+    [SerializeField] Color normalWallColor;
+    [SerializeField] Color normalGroundColor;
+    [SerializeField] Color tensionWallColor;
+    [SerializeField] Color tensionGroundColor;
+
     float dps;
     float waitTime;
     bool triggerShaking = false;
@@ -23,6 +30,9 @@ public class MentalHealth : MonoBehaviour {
         dps = health / timeLimitation;
         health = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
+
+        wall.color = normalWallColor;
+        ground.color = normalGroundColor;
         
         FunctionTimer.Create(JumpScare, jumpScareTimeInterval);
         FunctionTimer.Create(DecreaseHealthByTime, 1);
@@ -33,12 +43,28 @@ public class MentalHealth : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         float heathPercentage = health / maxHealth;
-        if (heathPercentage < 0.75) {
+        if (heathPercentage < 0.8) {
             triggerShaking = true;
         }
 
-        if (heathPercentage < 0.5) {
+        if (heathPercentage < 0.6) {
             crackImage.enabled = true;
+        }
+
+        if (heathPercentage < 0.4) {
+            wall.color = tensionWallColor;
+            ground.color = tensionGroundColor;            
+        }
+
+        if (heathPercentage < 0.2) {
+            holeImage.enabled = true;
+        }
+    }
+
+    void OnTriggerEnter(Collider other) {
+        if (other.gameObject.CompareTag("Heart")) {
+            health = Mathf.Clamp(health + 50, 0, maxHealth);
+            Destroy(other.gameObject);
         }
     }
 
