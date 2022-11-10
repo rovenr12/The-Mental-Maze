@@ -8,6 +8,8 @@ public class MentalHealth : MonoBehaviour {
     [SerializeField] HealthBar healthBar;
     [SerializeField] float maxHealth = 100;
     [SerializeField] float health;
+
+    [SerializeField] JumpScare jumpScare;
     [SerializeField] int jumpScareDamage = 10;
     [SerializeField] int timeLimitation = 60;
     [SerializeField] float jumpScareTimeInterval = 10f;
@@ -103,6 +105,7 @@ public class MentalHealth : MonoBehaviour {
 
     void JumpScare() {
         if (IsAlive()) {
+            jumpScare.ActiveGhost(transform.position, transform.position + transform.forward * 10);
             DecreaseHealth(jumpScareDamage);
             FunctionTimer.Create(JumpScare, jumpScareTimeInterval);
         }
